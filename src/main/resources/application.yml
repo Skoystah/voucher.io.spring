@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: voucherio
+server:
+  port: 8000
