@@ -1,5 +1,14 @@
 spring:
   application:
     name: voucherio
+  datasource:
+    # url: jdbc:sqlite:/Users/geert/workspace/github.com/Skoystah/voucher.io/voucher.db
+    url: jdbc:sqlite:voucher.db
+    driver-class-name: org.sqlite.JDBC
+  sql:
+    init:
+      mode: always
+  # jpa:
+  #   database-platform: org.hibernate.community.dialect.SQLiteDialect
 server:
   port: 8000

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public final class Voucher {
+public final class VoucherResponse {
 
     private String code;
     private VoucherDuration duration;
