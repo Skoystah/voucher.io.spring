@@ -1,4 +1,6 @@
-package org.gdo.voucherio.voucher;
+package org.gdo.voucherio.voucher.model;
+
+import jakarta.persistence.EnumeratedValue;
 
 public enum VoucherDuration {
     ONE_HOUR("1h"),
@@ -6,19 +8,20 @@ public enum VoucherDuration {
     FOUR_HOURS("4h"),
     TWELVE_HOURS("12h");
 
-    public String duration;
+    @EnumeratedValue
+    public String strDuration;
 
     private VoucherDuration(String duration) {
-        this.duration = duration;
+        this.strDuration = duration;
     }
 
-    public String getDuration() {
-        return this.duration;
+    public String toStr() {
+        return this.strDuration;
     }
 
     public static VoucherDuration fromCode(String duration) {
         for (VoucherDuration d : values()) {
-            if (d.duration.equals(duration)) {
+            if (d.strDuration.equals(duration)) {
                 return d;
             }
         }

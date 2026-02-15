@@ -1,14 +1,14 @@
-package org.gdo.voucherio.voucher;
+package org.gdo.voucherio.voucher.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public final class Voucher {
+public class VoucherResponse {
 
     private String code;
-    private VoucherDuration duration;
+    private String duration;
     private Boolean used;
 
 }

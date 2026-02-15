@@ -2,13 +2,42 @@ spring:
   application:
     name: voucherio
   datasource:
-    # url: jdbc:sqlite:/Users/geert/workspace/github.com/Skoystah/voucher.io/voucher.db
-    url: jdbc:sqlite:voucher.db
+    url: jdbc:sqlite:/Users/geert/workspace/github.com/Skoystah/voucher.io/voucher.db
+    # url: jdbc:sqlite:voucher.db
     driver-class-name: org.sqlite.JDBC
   sql:
     init:
       mode: always
-  # jpa:
-  #   database-platform: org.hibernate.community.dialect.SQLiteDialect
+  # mvc:
+  #   dispatch-options-request: false
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
 server:
   port: 8000
+  ssl:
+    enabled: true
+    certificate: "classpath:localhost.pem"
+    certificate-private-key: "classpath:localhost-key.pem"
+
+logging:
+  level:
+    security: INFO
+    web: DEBUG
+    org:
+      springframework:
+        security: INFO
+        data: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: beans
+
+jwt:
+  # secret: a85cbad7a7ddcfa51a87f71d0abf8fb9
+  secret: RlbKKf_kOj7rjr4CUyfu21v8x1tRddFAUOGWUd0xog8mXurEtadffW4U8h7oKWvzSOueHSNCyAacjyWjjOoBIA
