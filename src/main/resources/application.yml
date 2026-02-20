@@ -3,13 +3,10 @@ spring:
     name: voucherio
   datasource:
     url: jdbc:sqlite:/Users/geert/workspace/github.com/Skoystah/voucher.io/voucher.db
-    # url: jdbc:sqlite:voucher.db
     driver-class-name: org.sqlite.JDBC
   sql:
     init:
       mode: always
-  # mvc:
-  #   dispatch-options-request: false
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     generate-ddl: false
@@ -39,5 +36,4 @@ management:
         include: beans
 
 jwt:
-  # secret: a85cbad7a7ddcfa51a87f71d0abf8fb9
-  secret: RlbKKf_kOj7rjr4CUyfu21v8x1tRddFAUOGWUd0xog8mXurEtadffW4U8h7oKWvzSOueHSNCyAacjyWjjOoBIA
+  secretKey: RlbKKf_kOj7rjr4CUyfu21v8x1tRddFAUOGWUd0xog8mXurEtadffW4U8h7oKWvzSOueHSNCyAacjyWjjOoBIA
