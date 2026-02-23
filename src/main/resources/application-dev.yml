@@ -5,3 +5,12 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
+
+logging:
+  level:
+    security: DEBUG
+    web: DEBUG
+    org:
+      springframework:
+        security: DEBUG
+        data: INFO

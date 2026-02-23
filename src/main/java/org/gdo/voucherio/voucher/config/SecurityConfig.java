@@ -39,11 +39,12 @@ public class SecurityConfig {
                 // Authorization
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers("/vouchers/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().denyAll())
-                .httpBasic(Customizer.withDefaults());
+        // .httpBasic(Customizer.withDefaults());
         ;
 
         return http.build();

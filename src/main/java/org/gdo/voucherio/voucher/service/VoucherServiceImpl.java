@@ -13,7 +13,6 @@ import org.gdo.voucherio.voucher.exception.NoVoucherExistsException;
 import org.gdo.voucherio.voucher.exception.VoucherAlreadyExistsException;
 import org.gdo.voucherio.voucher.repository.VoucherRepository;
 import org.springframework.data.domain.Example;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;

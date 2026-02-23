@@ -2,7 +2,6 @@ package org.gdo.voucherio.controller;
 
 import org.gdo.voucherio.voucher.controller.VoucherController;
 import org.gdo.voucherio.voucher.exception.NoVoucherExistsException;
-import org.gdo.voucherio.voucher.model.VoucherRequest;
 import org.gdo.voucherio.voucher.model.VoucherResponse;
 import org.gdo.voucherio.voucher.service.VoucherService;
 

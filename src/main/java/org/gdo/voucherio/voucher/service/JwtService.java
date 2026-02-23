@@ -6,7 +6,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +14,11 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @ConfigurationProperties(prefix = "jwt")
+@Slf4j
 public class JwtService {
 
     // @Value("${jwt.secret}")
@@ -50,8 +51,16 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Boolean validateJwt(String jwt) {
+    public Boolean isValid(String jwt) {
 
+        try {
+            if (isExpired(extractExpiration(jwt))) {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("JWT error : ", e);
+            return false;
+        }
         // add logic
         return true;
 
@@ -61,13 +70,19 @@ public class JwtService {
         return extractClaims(jwt).getSubject();
     }
 
-    private Claims extractClaims(String jwt) {
+    public Date extractExpiration(String jwt) {
+        return extractClaims(jwt).getExpiration();
+    }
 
+    private Boolean isExpired(Date expiration) {
+        return expiration.before(new Date());
+    }
+
+    private Claims extractClaims(String jwt) {
         Jws<Claims> parse = Jwts.parser()
                 .verifyWith(getSignKey())
                 .build()
                 .parseSignedClaims(jwt);
-
         return parse.getPayload();
     }
 

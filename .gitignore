@@ -1,3 +1,7 @@
+*.db
+*.pem
+/src/main/resources/*.pem
+
 *#
 *.iml
 *.ipr
@@ -43,5 +47,4 @@ secrets.yml
 node_modules
 /.kotlin/
 
-*.pem
-./src/main/resources/*.pem
+

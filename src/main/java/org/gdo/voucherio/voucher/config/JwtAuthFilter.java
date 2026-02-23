@@ -13,7 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -37,18 +39,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String jwt = extractJwtFromCookie(request);
 
-        if (jwt != null) {
+        if (jwt != null && this.jwtService.isValid(jwt)) {
             String username = this.jwtService.extractUserName(jwt);
-            UserDetails currentUser = userService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authToken = UsernamePasswordAuthenticationToken.authenticated(
-                    currentUser.getUsername(),
-                    null,
-                    currentUser.getAuthorities());
-            // TODO / need ?
-            // authToken.setDetails(new
-            // WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            // Load user from repository based on the jwt user name
+            try {
+
+                UserDetails currentUser = userService.loadUserByUsername(username);
+                // Create authentication - based on jwt token
+                UsernamePasswordAuthenticationToken authToken = UsernamePasswordAuthenticationToken.authenticated(
+                        currentUser,
+                        null,
+                        currentUser.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } catch (Exception e) {
+                log.error("Error retrieving user details: ", e);
+            }
         }
 
         filterChain.doFilter(request, response);
