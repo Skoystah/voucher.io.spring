@@ -1,6 +1,7 @@
 *.db
 *.pem
 /src/main/resources/*.pem
+.idea
 
 *#
 *.iml
