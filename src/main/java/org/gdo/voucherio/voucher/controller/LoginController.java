@@ -10,13 +10,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -36,14 +33,14 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@RequestBody LoginRequest loginRequest) {
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken
+        final Authentication authenticationRequest = UsernamePasswordAuthenticationToken
                 .unauthenticated(loginRequest.name, loginRequest.password);
-        Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
+        final Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
 
-        String jwt = this.jwtService.generateToken(authenticationResponse.getName());
-        User authUser = (User) authenticationResponse.getPrincipal();
+        final String jwt = this.jwtService.generateToken(authenticationResponse.getName());
+        final User authUser = (User) authenticationResponse.getPrincipal();
 
-        ResponseCookie authCookie = ResponseCookie.from("authToken")
+        final ResponseCookie authCookie = ResponseCookie.from("authToken")
                 .httpOnly(true)
                 .secure(true)
                 .value(jwt)
@@ -55,33 +52,6 @@ public class LoginController {
                 .body(userResponseMapper.from(authUser));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue("authToken") String authToken) {
-
-        System.out.println("logging out!" + authToken);
-        ResponseCookie authCookie = ResponseCookie.from("authToken")
-                .build();
-
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, authCookie.toString())
-                .body(null);
-    }
-
     public record LoginRequest(String name, String password) {
-    }
-
-    private String extractJwtFromCookie(HttpServletRequest request) {
-
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie c : request.getCookies()) {
-                if (c.getName().equals("authToken")) {
-                    return c.getValue();
-                }
-            }
-        }
-
-        return null;
     }
 }

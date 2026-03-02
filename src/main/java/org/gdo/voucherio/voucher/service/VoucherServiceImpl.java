@@ -35,7 +35,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     public List<VoucherResponse> findAll(VoucherSearchCriteria voucherSearchCriteria) {
 
-        Example<Voucher> queryVoucher = Example.of(voucherSearchCriteria.toVoucher());
+        final Example<Voucher> queryVoucher = Example.of(voucherSearchCriteria.toVoucher());
 
         return this.voucherRepository.findAll(queryVoucher)
                 .stream()
@@ -45,7 +45,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public VoucherResponse findByCode(String code) {
-        Optional<Voucher> voucher = this.voucherRepository.findById(code);
+        final Optional<Voucher> voucher = this.voucherRepository.findById(code);
 
         if (!voucher.isPresent()) {
             throw new NoVoucherExistsException(
@@ -56,14 +56,14 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public VoucherResponse addVoucher(VoucherRequest voucherRequest) {
-        Optional<Voucher> savedVoucher = this.voucherRepository.findById(voucherRequest.getCode());
+        final Optional<Voucher> savedVoucher = this.voucherRepository.findById(voucherRequest.getCode());
 
         if (savedVoucher.isPresent()) {
             throw new VoucherAlreadyExistsException(
                     String.format("Voucher with code %s already exists", voucherRequest.getCode()));
         }
 
-        Voucher newVoucher = voucherRequestMapper.from(voucherRequest);
+        final Voucher newVoucher = voucherRequestMapper.from(voucherRequest);
         newVoucher.setUsed(false);
 
         return voucherResponseMapper.from(this.voucherRepository.save(newVoucher));
@@ -78,7 +78,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public void useVoucher(String code) {
-        Voucher voucher = this.voucherRepository.findById(code)
+        final Voucher voucher = this.voucherRepository.findById(code)
                 .orElseThrow(
                         () -> new NoVoucherExistsException(String.format("Voucher with code %s does not exist", code)));
 

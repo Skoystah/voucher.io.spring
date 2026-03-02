@@ -1,15 +1,29 @@
 package org.gdo.voucherio.service;
 
-public class JwtServiceTest {
-    public void swtch(int x) {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-        if (x == -1) {
-            System.out.println(x);
-        } else if (x == 0) {
-            System.out.println(x);
-        } else if (x > 0) {
-            System.out.println(x);
-        }
-        ;
+import org.gdo.voucherio.voucher.service.JwtService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "jwt")
+@ExtendWith(MockitoExtension.class)
+public class JwtServiceTest {
+
+    @InjectMocks
+    private JwtService jwtService;
+
+    // @Test
+    public void testGenerateJwt() {
+
+        final String userName = "Jos";
+
+        assertNotNull(jwtService.generateToken(userName));
+
     }
+
 }

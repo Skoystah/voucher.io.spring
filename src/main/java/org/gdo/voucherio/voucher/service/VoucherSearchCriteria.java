@@ -10,7 +10,7 @@ import lombok.Data;
 public class VoucherSearchCriteria {
 
     @Nullable
-    private String duration;
+    final private String duration;
 
     private Boolean includeUsed = false;
 

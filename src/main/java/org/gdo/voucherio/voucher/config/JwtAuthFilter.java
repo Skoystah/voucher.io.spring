@@ -54,7 +54,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (Exception e) {
-                log.error("Error retrieving user details: ", e);
+                log.error("Error retrieving user details: " + e.getMessage());
             }
         }
 

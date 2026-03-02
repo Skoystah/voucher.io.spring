@@ -21,33 +21,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtService {
 
-    // @Value("${jwt.secret}")
     private String secretKey;
 
     public void setSecretKey(String secretKey) {
+        log.debug("SETTING SECRET KEY WITH " + secretKey);
         this.secretKey = secretKey;
     }
 
     public String generateToken(String username) {
 
-        Instant issued_at = Instant.now();
+        final Instant issued_at = Instant.now();
         // Todo for now 30 days - to parametrize
-        Instant expires_at = issued_at.plus(30, ChronoUnit.DAYS);
+        final Instant expires_at = issued_at.plus(30, ChronoUnit.DAYS);
 
-        String jwt = Jwts.builder()
+        final String jwt = Jwts.builder()
                 .subject(username)
                 .issuedAt(Date.from(issued_at))
                 .expiration(Date.from(expires_at))
                 .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
 
-        System.out.println("jwt " + jwt);
+        log.debug("Generated jwt token: " + jwt);
         return jwt;
 
     }
 
     public SecretKey getSignKey() {
-        byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
+        final byte[] keyBytes = Decoders.BASE64URL.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -58,7 +58,7 @@ public class JwtService {
                 return false;
             }
         } catch (Exception e) {
-            log.error("JWT error : ", e);
+            log.warn("JWT error : ", e.getMessage());
             return false;
         }
         // add logic
@@ -79,7 +79,7 @@ public class JwtService {
     }
 
     private Claims extractClaims(String jwt) {
-        Jws<Claims> parse = Jwts.parser()
+        final Jws<Claims> parse = Jwts.parser()
                 .verifyWith(getSignKey())
                 .build()
                 .parseSignedClaims(jwt);

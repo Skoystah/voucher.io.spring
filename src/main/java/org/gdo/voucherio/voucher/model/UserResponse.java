@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserResponse {
-
+    //
     private String name;
     private Boolean is_admin;
 

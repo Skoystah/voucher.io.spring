@@ -6,15 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +27,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter,
+            CookieClearingLogoutHandler cookieClear) {
         http
                 // TEMP DISABLE CSRF
                 .csrf(csrf -> csrf.disable())
@@ -38,26 +37,40 @@ public class SecurityConfig {
                 // .authenticationProvider(authenticationProvider())
                 // Authorization
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.addLogoutHandler(cookieClear))
+                .logout(logout -> logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers("/vouchers/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().denyAll())
+        // Dont need httpBasic, that results in having a popup on frontend asking for
+        // credentials
         // .httpBasic(Customizer.withDefaults());
         ;
 
         return http.build();
     }
 
+    // Since im using a custom /login endpoint, an AuthenticationManager bean must
+    // be provided to be
+    // injected
+    // @Bean
+    // public AuthenticationManager authenticationManager(UserDetailsService
+    // userDetailsService,
+    // PasswordEncoder passwordEncoder) {
+    //
+    // DaoAuthenticationProvider authenticationProvider = new
+    // DaoAuthenticationProvider(userDetailsService);
+    // authenticationProvider.setPasswordEncoder(passwordEncoder);
+    //
+    // return new ProviderManager(authenticationProvider);
+    // }
+    //
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
-
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(authenticationProvider);
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
+        return configuration.getAuthenticationManager();
     }
-
 }

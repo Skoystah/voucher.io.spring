@@ -27,4 +27,13 @@ public enum VoucherDuration {
         }
         throw new IllegalArgumentException("Duration does not exist");
     }
+
+    public static Boolean isValid(String duration) {
+        try {
+            fromCode(duration);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
 }

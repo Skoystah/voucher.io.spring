@@ -8,9 +8,14 @@ spring:
 
 logging:
   level:
-    security: DEBUG
+    security: TRACE
     web: DEBUG
     org:
       springframework:
-        security: DEBUG
+        security: TRACE
         data: INFO
+
+jwt:
+  secretKey: zRKWUZHtaEQe5bD67K-pT-aJuRJGE4YyLy0NoGBiFmcjVdzXAAR51yGvbdJ3kKFWWikpRQMaK-LcFZFrULW5iKaeldKNS41Ri_rEWaC7Kp2_8LN8ZFy0uLRIvCVaej-5W-GZuPuHfQYfCbaZ-NmP8AJG-pSoO3UaBY7-B8w9uj4
+  # secretKey: RlbKKf_kOj7rjr4CUyfu21v8x1tRddFAUOGWUd0xog8mXurEtadffW4U8h7oKWvzSOueHSNCyAacjyWjjOoBIA
+  expiresAfterDays: 1
