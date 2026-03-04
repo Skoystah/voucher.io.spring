@@ -5,6 +5,7 @@ import org.gdo.voucherio.voucher.exception.NoVoucherExistsException;
 import org.gdo.voucherio.voucher.exception.VoucherAlreadyExistsException;
 import org.gdo.voucherio.voucher.model.VoucherRequest;
 import org.gdo.voucherio.voucher.model.VoucherResponse;
+import org.gdo.voucherio.voucher.service.VoucherSearchCriteria;
 import org.gdo.voucherio.voucher.service.VoucherService;
 
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(VoucherController.class)
@@ -47,6 +53,7 @@ public class VoucherControllerTest {
 
         this.mockMvc.perform(get("/vouchers/{code}", "LEU123"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value("LEU123"))
                 .andExpect(jsonPath("$.duration").value("1h"))
                 .andExpect(jsonPath("$.used").value(false));
@@ -56,11 +63,103 @@ public class VoucherControllerTest {
     @Test
     public void testGetVoucherByCodeNotFound() throws Exception {
 
-        // conditions
-        when(voucherService.findByCode("LEU123")).thenThrow(NoVoucherExistsException.class);
+        // test data
+        final String voucherCode = "LEU123";
 
-        this.mockMvc.perform(get("/vouchers/{code}", "LEU123"))
+        // conditions
+        when(voucherService.findByCode(voucherCode)).thenThrow(NoVoucherExistsException.class);
+
+        this.mockMvc.perform(get("/vouchers/{code}", voucherCode))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetAllUnusedVouchers() throws Exception {
+
+        // test data
+        VoucherResponse expectedVoucher1 = new VoucherResponse("LEU123", "1h", false);
+        VoucherResponse expectedVoucher2 = new VoucherResponse("LEU456", "2h", false);
+        VoucherResponse expectedVoucher3 = new VoucherResponse("LEU789", "4h", false);
+
+        List<VoucherResponse> expectedVouchers = new ArrayList<>();
+        expectedVouchers.add(expectedVoucher1);
+        expectedVouchers.add(expectedVoucher2);
+        expectedVouchers.add(expectedVoucher3);
+        
+        // conditions
+        when(voucherService.findAll(new VoucherSearchCriteria(null,null))).thenReturn(expectedVouchers);
+
+        this.mockMvc.perform(get("/vouchers"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+            .andExpect(jsonPath("$.length()").value(expectedVouchers.size()))
+            .andExpect(jsonPath("$[0].code").value(expectedVoucher1.getCode()))
+            .andExpect(jsonPath("$[1].code").value(expectedVoucher2.getCode()))
+            .andExpect(jsonPath("$[2].code").value(expectedVoucher3.getCode()));
+
+
+    }
+
+    @Test
+    public void testGetOnlyUnusedVouchers() throws Exception {
+
+        // test data
+        VoucherResponse expectedVoucher1 = new VoucherResponse("LEU123", "1h", false);
+        VoucherResponse expectedVoucher3 = new VoucherResponse("LEU789", "4h", false);
+
+        List<VoucherResponse> expectedVouchers = new ArrayList<>();
+        expectedVouchers.add(expectedVoucher1);
+        expectedVouchers.add(expectedVoucher3);
+        
+        // conditions
+        when(voucherService.findAll(new VoucherSearchCriteria(null,false))).thenReturn(expectedVouchers);
+
+        this.mockMvc.perform(get("/vouchers?includeUsed={includeUsed}", false))
+
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+            .andExpect(jsonPath("$.length()").value(expectedVouchers.size()))
+            .andExpect(jsonPath("$[0].code").value(expectedVoucher1.getCode()))
+            .andExpect(jsonPath("$[1].code").value(expectedVoucher3.getCode()));
+    }
+
+    @Test
+    public void testGetAllVouchers() throws Exception {
+
+        // test data
+        VoucherResponse expectedVoucher1 = new VoucherResponse("LEU123", "1h", false);
+        VoucherResponse expectedVoucher2 = new VoucherResponse("LEU456", "2h", true);
+        VoucherResponse expectedVoucher3 = new VoucherResponse("LEU789", "4h", false);
+
+        List<VoucherResponse> expectedVouchers = new ArrayList<>();
+        expectedVouchers.add(expectedVoucher1);
+        expectedVouchers.add(expectedVoucher2);
+        expectedVouchers.add(expectedVoucher3);
+        
+        // conditions
+        when(voucherService.findAll(new VoucherSearchCriteria(null,true))).thenReturn(expectedVouchers);
+
+        this.mockMvc.perform(get("/vouchers?includeUsed={includeUsed}", true))
+
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+            .andExpect(jsonPath("$.length()").value(expectedVouchers.size()))
+            .andExpect(jsonPath("$[0].code").value(expectedVoucher1.getCode()))
+            .andExpect(jsonPath("$[1].code").value(expectedVoucher2.getCode()))
+            .andExpect(jsonPath("$[2].code").value(expectedVoucher3.getCode()));
+    }
+
+    @Test
+    public void testGetAllUnusedVouchersNothingFound() throws Exception {
+
+        // conditions
+        when(voucherService.findAll(new VoucherSearchCriteria(null,null))).thenThrow(new NoVoucherExistsException("no vouchers found"));
+
+        this.mockMvc.perform(get("/vouchers"))
+            .andExpect(status().isNotFound());
 
     }
 

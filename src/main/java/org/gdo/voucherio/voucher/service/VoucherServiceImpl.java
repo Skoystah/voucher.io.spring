@@ -37,10 +37,16 @@ public class VoucherServiceImpl implements VoucherService {
 
         final Example<Voucher> queryVoucher = Example.of(voucherSearchCriteria.toVoucher());
 
-        return this.voucherRepository.findAll(queryVoucher)
+        List<VoucherResponse> vouchers = this.voucherRepository.findAll(queryVoucher)
                 .stream()
                 .map(voucherResponseMapper::from)
                 .collect(Collectors.toList());
+
+        if (vouchers.size() == 0) {
+            throw new NoVoucherExistsException("No vouchers found for given criteria");
+        }
+
+        return vouchers;
 
     }
 
