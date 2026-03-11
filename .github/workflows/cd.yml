@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: user/app:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/voucher-io:latest
 
   # deploy:
   #   name: Deploy Image
