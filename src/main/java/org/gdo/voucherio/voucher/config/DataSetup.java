@@ -21,14 +21,14 @@ public class DataSetup {
     public CommandLineRunner dataLoader(
             VoucherRepository voucherRepository,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
-            ) {
+            PasswordEncoder passwordEncoder) {
         return args -> {
             voucherRepository.save(new Voucher("LEU123", VoucherDuration.ONE_HOUR, false));
-            voucherRepository.save(new Voucher("LEU456",VoucherDuration.TWELVE_HOURS, false));
+            voucherRepository.save(new Voucher("LEU456", VoucherDuration.TWELVE_HOURS, false));
             voucherRepository.save(new Voucher("LEU789", VoucherDuration.FOUR_HOURS, true));
             voucherRepository.save(new Voucher("LEUABC", VoucherDuration.TWO_HOURS, false));
-            userRepository.save(new User("Jos", true, new Date().toString(), passwordEncoder.encode("password") ));
+            userRepository.save(new User("Jos", true, new Date().toString(), passwordEncoder.encode("password")));
+            userRepository.save(new User("Marie", false, new Date().toString(), passwordEncoder.encode("password")));
         };
     }
 }

@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     @Nonnull
     private String username;
 

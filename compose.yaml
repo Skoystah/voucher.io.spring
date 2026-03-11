@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: .
+      target: final
+    ports:
+      - "8000:443"
+    mem_limit: 512m
+    environment:
+      SPRING_PROFILES_ACTIVE: fet
+    volumes:
+      - sqlite:/var/lib/sqlite
+
+volumes:
+  sqlite:
+    external: true
+    name: sqlite

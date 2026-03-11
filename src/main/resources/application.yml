@@ -14,7 +14,7 @@ spring:
       ddl-auto: none
 
 server:
-  port: 8000
+  port: 443
   ssl:
     enabled: true
     certificate: "classpath:localhost.pem"
@@ -23,7 +23,7 @@ server:
 logging:
   level:
     security: INFO
-    web: DEBUG
+    web: INFO
     org:
       springframework:
         security: INFO
@@ -38,3 +38,5 @@ management:
 jwt:
   secretKey: RlbKKf_kOj7rjr4CUyfu21v8x1tRddFAUOGWUd0xog8mXurEtadffW4U8h7oKWvzSOueHSNCyAacjyWjjOoBIA
   expiresAfterDays: 30
+
+# test comment caching docker?
